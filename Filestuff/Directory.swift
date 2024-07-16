@@ -8,14 +8,13 @@
 import Foundation
 
 /// # Directory
-/// A value that holds `File` and `Directory` containers and the cached metadata representing directories, it's contents and
-/// it's structures.
+/// A container that loads and stores `File` and other `Directory` containers to represent a given directory and it's contents as
+/// it is on the file system.
 public struct Directory: FilestuffContainer {
     public var url: URL
     public var attribute: URLResourceValues
 
-    /// An array of `FilestuffContainer` that stores the list of files and/or directories belonging to a directory on the
-    /// filesystem.
+    /// An array of `FilestuffContainer` that stores a list of files and/or directories containers.
     public var content: [FilestuffContainer]
 }
 
@@ -43,7 +42,7 @@ extension Directory {
     /// `.isDirectory` or examine the `.contentType` property for detailed file type info.
     ///
     /// When performing a deep load, directories will be loaded into `Directory` containers while all other file types will be loaded
-    /// into `File` containers. The main difference between `File` containers and `Directory` containers is that `Directory`
+    /// into `File` containers. The main difference between `File` containers and `Directory` containers is the `Directory`
     /// containers has an extra property `content` to store an array of `Filestuff` type containers.
     ///
     /// > Note: Files or directories will be skipped if an error occurred when retrieving metadata or loading subdirectories. Other
@@ -82,7 +81,7 @@ extension Directory {
     /// `.isDirectory` or examine the `.contentType` property for detailed file type info.
     ///
     /// When performing a deep load, directories will be loaded into `Directory` containers while all other file types will be loaded
-    /// into `File` containers. The main difference between `File` containers and `Directory` containers is that `Directory`
+    /// into `File` containers. The main difference between `File` containers and `Directory` containers is the `Directory`
     /// containers has an extra property `content` to store an array of `Filestuff` type containers.
     ///
     /// > Note: Files or directories will be skipped if an error occurred when retrieving metadata or loading subdirectories. Other

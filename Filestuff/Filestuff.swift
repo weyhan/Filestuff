@@ -8,9 +8,10 @@
 import Foundation
 import UniformTypeIdentifiers
 
-/// A `Set` of `URLResourceKey` that will be cached in `Filestuff` containers.
+/// The file attributes for each files that is cached when `Filestuff` reads a directory contents.
 ///
-/// This `Set` of `URLResourceKey` is the only file metadata that will be cached for now.
+/// This `Set` of [`URLResourceKey`](https://developer.apple.com/documentation/foundation/urlresourcekey)
+/// is the only file metadata that will be cached for now.
 ///
 /// > Note: Current there is no way to extend this set without releasing a new version of the `Filestuff` framework.
 internal let filestuffResourceKeysSet: Set<URLResourceKey> = [
@@ -25,13 +26,17 @@ internal let filestuffResourceKeysSet: Set<URLResourceKey> = [
     .contentTypeKey
 ]
 
-/// Convert `Set` value `filestuffResourceKeysSet` to `Array` value of `filestuffResourceKeys` for convenience
-/// when calling methods that requires an `Array` of `URLResourceKey` as argument.
+/// Converts `Set` `filestuffResourceKeysSet` to `Array`  of `filestuffResourceKeys` for the
+/// convenience of calling methods / functions that requires an `Array` of
+/// [`URLResourceKey`](https://developer.apple.com/documentation/foundation/urlresourcekey)
+/// as argument.
 internal var filestuffResourceKeysArray: Array<URLResourceKey> { Array(filestuffResourceKeysSet) }
 
 /// An `Array` of `DirectoryEnumerationOptions` that `Filestuff` enumeration uses where enumerating directories
-/// content. These options are included in the array:
-///   - [`skipsSubdirectoryDescendants`]{https://developer.apple.com/documentation/foundation/filemanager/directoryenumerationoptions/1410021-skipssubdirectorydescendants}
+/// content.
+///
+/// The `filestuffDirectoryEnumerationOptions` `Array` has the following options:
+///   - [`skipsSubdirectoryDescendants`](https://developer.apple.com/documentation/foundation/filemanager/directoryenumerationoptions/1410021-skipssubdirectorydescendants)
 ///   - [`skipsPackageDescendants`](https://developer.apple.com/documentation/foundation/filemanager/directoryenumerationoptions/1410344-skipspackagedescendants)
 ///
 /// The enumeration operation in `Filestuff` will skips subdirectory descendants and skips package descendants.
@@ -41,18 +46,19 @@ internal let filestuffDirectoryEnumerationOptions: FileManager.DirectoryEnumerat
 ]
 
 // MARK: - Firestuff Throw Targets
-/// A `Error` `enum` that is the throw targets for all `Filestuff` methods that throws.
+
+/// The throw targets for all `Filestuff` methods that throws.
 public enum FilestuffError: Error {
-    /// The no file were found at the location provided.
+    /// No file were found at the location provided.
     case fileNotFound
 
-    /// The file is found in the provided location but it is not a directory where a directory is required for the operation.
+    /// The file is found in the provided location but it is not a directory where a directory is expected for the operation.
     case isNotDirectory
 
-    /// The file is found in the provided location but it is not a regular file where a regular file is required for the operation.
+    /// The file is found in the provided location but it is not a regular file where a regular file is expected for the operation.
     case isNotFile
 
-    /// An error occurred while reading the content of a directory.
+    /// An unspecified error occurred while reading the content of a directory.
     case errorReadingDirectoryContent
 }
 
@@ -89,19 +95,19 @@ public protocol FilestuffContainer {
     /// The file's path on the filesystem.
     var path: String { get }
 
-    /// A Boolean value indicating whether the file is a regular file.
+    /// A `Boolean` value indicating whether the file is a regular file.
     var isRegularFile: Bool? { get }
 
-    /// A Boolean value indicating whether the file is a directory.
+    /// A `Boolean` value indicating whether the file is a directory.
     var isDirectory: Bool? { get }
 
-    /// A Boolean value indicating whether the file is a symbolic link.
+    /// A `Boolean` value indicating whether the file is a symbolic link.
     var isSymbolicLink: Bool? { get }
 
     /// The resource’s type of the file represented as optional [`UTType`](https://developer.apple.com/documentation/uniformtypeidentifiers/uttype).
     var contentType: UTType? { get }
 
-    /// A String value representation of the file's resource type.
+    /// A `String` value representation of the file's resource type.
     var contentTypeIdentifier: String? { get }
 }
 
