@@ -164,7 +164,7 @@ Print all files and directories contained in the `Directory` container at the sp
 To load additional attributes while reading directories, add `URLResourceKey` using `addFileResourceKey` convenience method. e.g.:
 
 ```
-	Filestuff.addFileResourceKey(key: .totalFileAllocatedSizeKey)
+	FilestuffUtils.addFileResourceKey(key: .totalFileAllocatedSizeKey)
 
 ```
 

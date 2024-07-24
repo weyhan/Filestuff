@@ -14,7 +14,7 @@ import UniformTypeIdentifiers
 /// is the only file metadata that will be cached for now.
 ///
 /// > Note: Current there is no way to extend this set without releasing a new version of the `Filestuff` framework.
-internal let filestuffResourceKeysSet: Set<URLResourceKey> = [
+internal var filestuffResourceKeysSet: Set<URLResourceKey> = [
     .fileSizeKey,
     .totalFileSizeKey,
     .fileResourceTypeKey,
@@ -44,6 +44,32 @@ internal let filestuffDirectoryEnumerationOptions: FileManager.DirectoryEnumerat
     .skipsSubdirectoryDescendants,
     .skipsPackageDescendants
 ]
+
+// MARK: - Filestuff Class
+
+/// Filestuff namespace to collect `Filestuff` convenience methods.
+///
+/// - Note: The classname is now `FilestuffUtils` because of the issue in Swift bug now.
+///   See [Bug SR-14195](https://github.com/apple/swift/issues/56573). When this bug is
+///   fixed in the future, `FilestuffUtils` will be renamed to `Filestuff` as it is
+///   originally intended.
+public class FilestuffUtils {
+    private init() {}
+
+    /// Adds `URLResourceKey` to default set of keys for loading file attributes.
+    ///
+    /// - Parameters:
+    ///   - keys: Array of `URLResourceKey` to add
+    ///
+    /// Keys added will persist until the app exits. While the app is still running, the additional keys will take
+    /// effect for all `Directory.load(url:)` calls to read directories.
+    public static func addFileResourceKey(keys: [URLResourceKey]) {
+        keys.forEach { filestuffResourceKeysSet.insert($0) }
+    }
+
+    /// Array of `URLResourceKey` to indicate which file attributes to load when reading directories.
+    public var filestuffResourceKeys: [URLResourceKey] { filestuffResourceKeysArray }
+}
 
 // MARK: - Firestuff Throw Targets
 
