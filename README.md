@@ -117,7 +117,7 @@ The deep read will load the whole directory tree with the following exception:
 Print all files and directories contained in the `Directory` container at the specific `URL`.
 
 ```
-	directory.content.forEach { file in 
+	directory.forEach { file in 
 		print("filename: \(file.name)")
 	}
 ```
