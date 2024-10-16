@@ -55,10 +55,10 @@ There are two mode of reading directories.
 * Shallow read (default):
 
 ```
-	let url = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!.deletingLastPathComponent()
+	let homeUrl = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!.deletingLastPathComponent()
 
 	do {
-		let directory = try Directory.load(url: url)
+		let directory = try Directory.load(url: homeUrl)
 	} catch {
 		// Handle error
 	}
@@ -79,10 +79,10 @@ Example result of shallow read where "…" is not read:
 * Deep read:
 
 ```
-	let url = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!.deletingLastPathComponent()
+	let homeUrl = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!.deletingLastPathComponent()
 
 	do {
-		let directory = try Directory.load(url: url, shallow: false)
+		let directory = try Directory.load(url: homeUrl, shallow: false)
 	} catch {
 		// Handle error
 	}
@@ -168,16 +168,23 @@ To load additional attributes while reading directories, add `URLResourceKey` us
 
 ```
 
-The additional keys added will persist in the same session but not across session. In other words, the additional keys will be in effect from the point after adding until the app quits.
+_Note: The additional keys will persist in the same session but not across session. In other words, the additional keys will take effect right after adding the keys untill the app quits._
 
 To load additional attributes on a one-off basis, pass the additional keys to the `load` convenience method as the optional argument `extraResourceKeys`. e.g.:
 
 ```
+	let homeUrl = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!.deletingLastPathComponent()
 
+	do {
+		let directory = try Directory.load(url: homeUrl, extraResourceKeys: [isAliasFileKey])
+	} catch {
+		// Handle error
+	}
 ```
+_Note: See below to add access to added extra resource keys_
 
 
-To access the additional attributes loaded when reading directories, extend the `FilestuffContainer ` to add computed properties to retrieve the attributes. e.g.:
+To access the additional attributes values, it is nessary to extend the `FilestuffContainer ` by adding computed properties to retrieve the value. e.g.:
 
 ```
 	extension FilestuffContainer {
@@ -185,3 +192,4 @@ To access the additional attributes loaded when reading directories, extend the 
 	}
 ```
 
+It's also possible to extend `FilestuffContainer` by adding functions that accepts arguments and manupelate the attributes values to suite your needs.

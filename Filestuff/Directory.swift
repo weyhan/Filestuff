@@ -23,75 +23,106 @@ public struct Directory: FilestuffContainer {
 // MARK: - Directory Factory
 extension Directory {
 
-    /// Returns a `Directory` container that holds the content of the directory at the specified `URL`.
+    /// Returns a `Directory` container that holds the content of the directory
+    /// at the specified `URL`.
     ///
     /// - Parameters:
-    ///   - url: The location of the directory to load.
-    ///       This `URL` must not be a symbolic link that points to the desired directory.
-    ///       You can use the [`resolvingSymlinksInPath`](https://developer.apple.com/documentation/foundation/nsurl/1415965-resolvingsymlinksinpath)
-    ///       method to resolve any symlinks in the `URL`.
+    ///   - url: 
+    ///     The location of the directory to load.
+    ///     This `URL` must not be a symbolic link that points to the desired
+    ///     directory. You can use the
+    ///     [`resolvingSymlinksInPath`](https://developer.apple.com/documentation/foundation/nsurl/1415965-resolvingsymlinksinpath)
+    ///     method to resolve any symlinks in the `URL`.
     ///
-    ///   - shallow: An optional `Boolean` to determine if this method will perform a shallow or a deep load. Default is to load
-    ///       shallowly.
+    ///   - extraResourceKeys:
+    ///     A one-off additional resource keys to load more file metadata.
     ///
-    /// - Returns: A `Directory` container that contains the list of files in the directory at the specified `URL`.
-    ///     The default set of the metadata for the containing directory and the list of files will be loaded at the same time.
-    ///     When performing a shallow load, all items in the directory will be captured in a `File` container even if the item
-    ///     is a directory.
+    ///   - shallow:
+    ///     An optional `Boolean` to determine if this method will perform a
+    ///     shallow or a deep load. Default is to load shallowly.
     ///
-    /// When performing a shallow load, the items in the directory will be loaded into `File` containers regardless if the items are
-    /// files or a directories. To distinguish files from directories, test the `File` parameters `.isFile`,
-    /// `.isDirectory` or examine the `.contentType` property for detailed file type info.
+    /// - Returns: 
+    ///   A `Directory` container that contains the list of files in the 
+    ///   directory at the specified `URL`. The default set of the metadata for
+    ///   the containing directory and the list of files will be loaded at the
+    ///   same time. When performing a shallow load, all items in the directory
+    ///   will be captured in a `File` container even if the item is a directory.
     ///
-    /// When performing a deep load, directories will be loaded into `Directory` containers while all other file types will be loaded
-    /// into `File` containers. The main difference between `File` containers and `Directory` containers is the `Directory`
-    /// containers has an extra storage for the content of the given directory.
+    /// When performing a shallow load, the items in the directory will be loaded
+    /// into `File` containers regardless if the items are files or a
+    /// directories. To distinguish files from directories, test the `File` 
+    /// parameters `.isFile`, `.isDirectory` or examine the `.contentType`
+    /// property for detailed file type info.
     ///
-    /// > Note: Files or directories will be skipped if an error occurred when retrieving metadata or loading subdirectories. Other
-    ///     unrecoverable error will cause this method to throw and error.
+    /// When performing a deep load, directories will be loaded into `Directory` 
+    /// containers while all other file types will be loaded into `File`
+    /// containers. The main difference between `File` containers and `Directory`
+    /// containers is the `Directory` containers has an extra storage for the
+    /// content of the given directory.
     ///
-    ///     Additionally, regardless of loading deeply or shallowly, this method will not decent into packages, i.e. bundles (special
-    ///     directories that are treated as a single file by the OS UI).
-    public static func load(url: URL, shallow: Bool = true) throws -> Directory {
-        return try load(url: url, attribute: nil, shallow: shallow)
+    /// - Note: Files or directories will be skipped if an error occurred when 
+    ///   retrieving metadata or loading subdirectories. Other unrecoverable
+    ///   error will cause this method to throw and error.
+    ///
+    /// - Note: Regardless of loading deeply or shallowly, this method will not 
+    ///   decent into packages, i.e. bundles (special directories that are
+    ///   treated as a single file by the OS UI).
+    public static func load(url: URL, extraResourceKeys: [URLResourceKey]? = nil, shallow: Bool = true) throws -> Directory {
+        return try load(url: url, attribute: nil, extraResourceKeys: extraResourceKeys, shallow: shallow)
     }
 
-    /// Returns a `Directory` container that holds the content of the directory at the specified `URL`.
+    /// Returns a `Directory` container that holds the content of the directory
+    /// at the specified `URL`.
     ///
     /// - Parameters:
-    ///   - url: The location of the directory to load.
-    ///       This `URL` must not be a symbolic link that points to the desired directory.
-    ///       You can use the [`resolvingSymlinksInPath`](https://developer.apple.com/documentation/foundation/nsurl/1415965-resolvingsymlinksinpath)
-    ///       method to resolve any symlinks in the `URL`.
+    ///   - url:
+    ///     The location of the directory to load. This `URL` must not be a
+    ///     symbolic link that points to the desired directory. You can use the
+    ///     [`resolvingSymlinksInPath`](https://developer.apple.com/documentation/foundation/nsurl/1415965-resolvingsymlinksinpath)
+    ///     method to resolve any symlinks in the `URL`.
     ///
-    ///   - attribute: An optional `URLResourceValues` value that contains the metadata of the directory at the
-    ///       specified `URL`.
-    ///       If `nil` is specified for this parameter, this method will fetch the metadata from the file system.
-    ///       This parameter is not validated for accuracy therefore it is up to the caller to provide the accurate metadata
-    ///       set corresponding to the directory at the specified `URL`.
+    ///   - attribute:
+    ///     An optional `URLResourceValues` value that contains the metadata of
+    ///     the directory at the specified `URL`. If `nil` is specified for this
+    ///     parameter, this method will fetch the metadata from the file system.
+    ///     This parameter is not validated for accuracy therefore it is up to
+    ///     the caller to provide the accurate metadata set corresponding to the
+    ///     directory at the specified `URL`.
     ///
-    ///   - shallow: An optional `Boolean` to determine if this method will perform a shallow or a deep load. Default is to load
-    ///       shallowly.
+    ///   - extraResourceKeys:
+    ///     A one-off additional resource keys to load more file metadata.
     ///
-    /// - Returns: A `Directory` container that contains the list of files in the directory at the specified `URL`.
-    ///     The default set of the metadata for the containing directory and the list of files will be loaded at the same time.
-    ///     When performing a shallow load, all items in the directory will be captured in a `File` container even if the item
-    ///     is a directory.
+    ///   - shallow:
+    ///     An optional `Boolean` to determine if this method will perform a
+    ///     shallow or a deep load. Default is to load shallowly.
     ///
-    /// When performing a shallow load, the items in the directory will be loaded into `File` containers regardless if the items are
-    /// files or a directories. To distinguish files from directories, test the `File` parameters `.isFile`,
-    /// `.isDirectory` or examine the `.contentType` property for detailed file type info.
+    /// - Returns:
+    ///   A `Directory` container that contains the list of files in the
+    ///   directory at the specified `URL`. The default set of the metadata for
+    ///   the containing directory and the list of files will be loaded at the
+    ///   same time. When performing a shallow load, all items in the directory
+    ///   will be captured in a `File` container even if the item is a directory.
     ///
-    /// When performing a deep load, directories will be loaded into `Directory` containers while all other file types will be loaded
-    /// into `File` containers. The main difference between `File` containers and `Directory` containers is the `Directory`
-    /// containers has an extra storage for the content of the given directory.
+    /// When performing a shallow load, the items in the directory will be
+    /// loaded  into `File` containers regardless if the items are files or a
+    /// directories. To distinguish files from directories, test the `File`
+    /// parameters `.isFile`, `.isDirectory` or examine the `.contentType`
+    /// property for detailed file type info.
     ///
-    /// > Note: Files or directories will be skipped if an error occurred when retrieving metadata or loading subdirectories. Other
-    ///     unrecoverable error will cause this method to throw and error.
+    /// When performing a deep load, directories will be loaded into `Directory`
+    /// containers while all other file types will be loaded into `File`
+    /// containers. The main difference between `File` containers and `Directory`
+    /// containers is the `Directory` containers has an extra storage for the
+    /// content of the given directory.
     ///
-    ///     Additionally, regardless of loading deeply or shallowly, this method will not decent into packages, i.e. bundles (special
-    ///     directories that are treated as a single file by the OS UI).
-    fileprivate static func load(url: URL, attribute: URLResourceValues?, shallow: Bool = true) throws -> Directory {
+    /// - Note: Files or directories will be skipped if an error occurred when
+    /// retrieving metadata or loading subdirectories. Other unrecoverable error
+    /// will cause this method to throw and error.
+    /// 
+    /// - Note: Regardless of loading deeply or shallowly, this method will
+    /// not decent into packages, i.e. bundles (special directories that are
+    /// treated as a single file by the OS UI).
+    fileprivate static func load(url: URL, attribute: URLResourceValues?, extraResourceKeys: [URLResourceKey]? = nil, shallow: Bool = true) throws -> Directory {
         let fileManager = FileManager.default
 
         var isDirectory : ObjCBool = false
@@ -110,10 +141,16 @@ extension Directory {
             throw FilestuffError.errorReadingDirectoryContent
         }
 
+        // Add one-off additional `URLResourceKey`s if provided.
+        var resourceKeys = filestuffResourceKeysSet
+        if let extraResourceKeys {
+            extraResourceKeys.forEach { resourceKeys.insert($0) }
+        }
+
         // TODO: Insert special error containers in case of errors reading files or directories.
         var content = [FilestuffContainer]()
         for case let fileUrl as URL in directoryEnumerator {
-            let resourceValues = try? fileUrl.resourceValues(forKeys: filestuffResourceKeysSet)
+            let resourceValues = try? fileUrl.resourceValues(forKeys: resourceKeys)
             guard let resourceValues = resourceValues else { continue }   // Keep going on error
 
             // Decide to use File or Directory container based on the following:
@@ -129,7 +166,7 @@ extension Directory {
             }
         }
 
-        let attribute = try attribute ?? url.resourceValues(forKeys: filestuffResourceKeysSet)
+        let attribute = try attribute ?? url.resourceValues(forKeys: resourceKeys)
 
         return Directory(url: url, attribute: attribute, content: content)
     }

@@ -12,8 +12,6 @@ import UniformTypeIdentifiers
 ///
 /// This `Set` of [`URLResourceKey`](https://developer.apple.com/documentation/foundation/urlresourcekey)
 /// is the only file metadata that will be cached for now.
-///
-/// > Note: Current there is no way to extend this set without releasing a new version of the `Filestuff` framework.
 internal var filestuffResourceKeysSet: Set<URLResourceKey> = [
     .fileSizeKey,
     .totalFileSizeKey,
