@@ -91,7 +91,7 @@ public class FilestuffUtils {
 
     /// Array of `URLResourceKey` to tell `Filestuff` which file attributes to
     /// load when reading directories.
-    public var filestuffResourceKeys: [URLResourceKey] { filestuffResourceKeysArray }
+    public static var filestuffResourceKeys: [URLResourceKey] { filestuffResourceKeysArray }
 }
 
 // MARK: - Firestuff Throw Targets
