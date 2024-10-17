@@ -14,7 +14,7 @@ import UniformTypeIdentifiers
 /// This `Set` of
 /// [`URLResourceKey`](https://developer.apple.com/documentation/foundation/urlresourcekey)
 /// tells `Filestuff` which metadata to cache when reading files or directories.
-internal var filestuffResourceKeysSet: Set<URLResourceKey> = [
+private(set) var filestuffResourceKeysSet: Set<URLResourceKey> = [
     .fileSizeKey,
     .totalFileSizeKey,
     .fileResourceTypeKey,
