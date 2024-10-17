@@ -7,8 +7,7 @@
 
 import Foundation
 
-/// # Directory
-/// A container that loads and stores `File` and other `Directory` containers 
+/// A container that loads and stores `File` and other `Directory` containers
 /// to represent a given directory and it's contents as it is on the file
 /// system.
 public struct Directory: FilestuffContainer {

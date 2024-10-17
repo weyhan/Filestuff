@@ -1,12 +1,12 @@
 # Filestuff
 
-Filestuff is a Swift framework to read and manage a directory tree suitable for building a file explorer interface.
+Filestuff is a Swift framework for reading and managing directory trees that is suitable for building a Finder-style file browser interface.
 
 ## Getting Started
 
 ### Installation
 
-Currently there is no plans to support Carthage or CocoaPods package managers.
+_Note: There are no plans to support Carthage or CocoaPods package managers._
 
 #### Swift Package
 
@@ -14,7 +14,7 @@ _Currently under development._
 
 #### Git Submodule
 
-On the Terminal.app, go to the root folder of the git repository you want to add Filestuff framework and then add the submodule folder.
+On the `Terminal.app`, go to the root folder of the git repository you want to add the Filestuff framework and then add the submodule folder.
 
 ```
 git submodule add https://github.com/weyhan/filestuff.git
@@ -22,11 +22,11 @@ git submodule init
 git submodule update
 ```
 
-To add Filestuff into your project, locate on Finder and drag `Filestuff.xcodeproj` into your project's Xcode Project Navigator pane.
+To add Filestuff to your project, locate the project file `Filestuff.xcodeproj` on Finder and drag it into your project's Xcode Project Navigator pane.
 
 #### Build From Source
 
-On the Terminal.app, type the following command to clone the Filestuff repository and build:
+On the `Terminal.app`, type the following command to clone the Filestuff repository and build:
 
 ```
 git clone https://github.com/weyhan/filestuff.git
@@ -34,9 +34,9 @@ cd filestuff
 source build-xcframework.sh
 ```
 
-The `Filestuff.xcframework` is in the `build` directory.
+The resulting framework file `Filestuff.xcframework` will be placed in the `build` directory.
 
-To add Filestuff into your project, locate in Finder and drag `Filestuff.xcframework` into your project's Xcode Project Navigator pane.
+To add Filestuff to your project, locate the framework file `Filestuff.xcframework` on Finder and drag it into your project's Xcode Project Navigator pane.
 
 ## Usage
 
@@ -50,18 +50,18 @@ import Filestuff
 
 #### Reading Directory Content
 
-There are two mode of reading directories.
+There are two modes of reading directories.
 
 * Shallow read (default):
 
 ```
-	let homeUrl = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!.deletingLastPathComponent()
+let homeUrl = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!.deletingLastPathComponent()
 
-	do {
-		let directory = try Directory.load(url: homeUrl)
-	} catch {
-		// Handle error
-	}
+do {
+	let directory = try Directory.load(url: homeUrl)
+} catch {
+	// Handle error
+}
 ```
 
 Example result of shallow read where "…" is not read:
@@ -79,13 +79,13 @@ Example result of shallow read where "…" is not read:
 * Deep read:
 
 ```
-	let homeUrl = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!.deletingLastPathComponent()
+let homeUrl = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!.deletingLastPathComponent()
 
-	do {
-		let directory = try Directory.load(url: homeUrl, shallow: false)
-	} catch {
-		// Handle error
-	}
+do {
+	let directory = try Directory.load(url: homeUrl, shallow: false)
+} catch {
+	// Handle error
+}
 ```
 
 Example result of deep read where the whole tree is loaded:
@@ -100,7 +100,7 @@ Example result of deep read where the whole tree is loaded:
 │   ├── Caches
 │   ├── Preferences
 │   └── Saved Application State
-│       └── com.hla.fast.savedState
+│       └── com.myapp.savedState
 │           └── KnownSceneSessions
 │               └── data.data
 ├── SystemData
@@ -110,21 +110,19 @@ Example result of deep read where the whole tree is loaded:
 The deep read will load the whole directory tree with the following exception:
 
 1. Will not follow into Symbolic link to a directory.
-2. Will not descend into Bundle/package type directory.
+2. Will not descend into bundle or package type directories.
 
 #### Iterating Over the Content of a Directory
 
-Print all files and directories contained in the `Directory` container at the specific `URL`.
+Print all files and directories in the `Directory` container at the specific `URL`.
 
 ```
-	directory.forEach { file in 
-		print("filename: \(file.name)")
-	}
+directory.forEach { file in 
+	print("filename: \(file.name)")
+}
 ```
 
 #### File / Directory Attributes
-
-
 
 * url: URL<br/> The URL value pointing to the file or directory on the filesystem where this `FilestuffContainer` represents.
 
@@ -132,17 +130,17 @@ Print all files and directories contained in the `Directory` container at the sp
 
 * size: Int?<br/>The file’s size, in bytes.
 
-* type: URLFileResourceType?<br/>The file's filesystem type represented as optional [`URLFileResourceType`](https://developer.apple.com/documentation/foundation/urlfileresourcetype).
+* type: URLFileResourceType?<br/>The filesystem type as [`URLFileResourceType`](https://developer.apple.com/documentation/foundation/urlfileresourcetype).
 
 * created: Date?<br/>The file's creation date.
 
 * modified: Date?<br/>The file's last modified date.
 
-* name: String<br/>The file's filename.
+* name: String<br/>The file's name.
 
 * ext: String<br/>The file's extension.
 
-* displayName: String<br/>The file's filename without the file extension.
+* displayName: String<br/>The file's name without the file extension.
 
 * path: String<br/>The file's path on the filesystem.
 
@@ -152,25 +150,29 @@ Print all files and directories contained in the `Directory` container at the sp
 
 * isSymbolicLink: Bool?<br/>A `Boolean` value indicating whether the file is a symbolic link.
 
-* contentType: UTType?<br/>The resource’s type of the file represented as optional [`UTType`](https://developer.apple.com/documentation/uniformtypeidentifiers/uttype).
+* contentType: UTType?<br/>The resource’s type of the file as [`UTType`](https://developer.apple.com/documentation/uniformtypeidentifiers/uttype).
 
 * contentTypeIdentifier: String?<br/>A `String` value representation of the file's resource type.
 
 
 #### Loading More Attribute
 
-##### Extending Filestuff
+There are two ways to ask Filestuff to load additional resources from the filesystem when available.
+
+##### Adding resource keys to the whole session
 
 To load additional attributes while reading directories, add `URLResourceKey` using `addFileResourceKey` convenience method. e.g.:
 
 ```
-	FilestuffUtils.addFileResourceKey(key: .totalFileAllocatedSizeKey)
+FilestuffUtils.addFileResourceKey(key: .totalFileAllocatedSizeKey)
 
 ```
 
-_Note: The additional keys will persist in the same session but not across session. In other words, the additional keys will take effect right after adding the keys untill the app quits._
+_Note: The additional keys will persist in the same session but not across sessions. In other words, the keys added will immediately take effect and continue to be in effect until the app quits. Any subsequent read will include the additional keys._
 
-To load additional attributes on a one-off basis, pass the additional keys to the `load` convenience method as the optional argument `extraResourceKeys`. e.g.:
+##### Adding resource keys to a one-time load method
+
+To load additional attributes on a one-time basis, pass the corresponding keys to the `load` convenience method as the optional argument `extraResourceKeys`. e.g.:
 
 ```
 	let homeUrl = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!.deletingLastPathComponent()
@@ -183,8 +185,9 @@ To load additional attributes on a one-off basis, pass the additional keys to th
 ```
 _Note: See below to add access to added extra resource keys_
 
+##### Accessing resource values loaded by adding resource keys
 
-To access the additional attributes values, it is nessary to extend the `FilestuffContainer ` by adding computed properties to retrieve the value. e.g.:
+To access the value of the additional attributes, it is necessary to extend the `FilestuffContainer ` by adding computed properties to retrieve the value. e.g.:
 
 ```
 	extension FilestuffContainer {
@@ -192,4 +195,4 @@ To access the additional attributes values, it is nessary to extend the `Filestu
 	}
 ```
 
-It's also possible to extend `FilestuffContainer` by adding functions that accepts arguments and manupelate the attributes values to suite your needs.
+It's also possible to extend `FilestuffContainer` by adding functions that accept arguments and manipulate attribute values to suit your needs.

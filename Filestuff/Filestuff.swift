@@ -8,10 +8,12 @@
 import Foundation
 import UniformTypeIdentifiers
 
-/// The file attributes for each files that is cached when `Filestuff` reads a directory contents.
+/// The `Set` of resource keys to tell `Filestuff` which metadata to cache when
+/// reading file or directory.
 ///
-/// This `Set` of [`URLResourceKey`](https://developer.apple.com/documentation/foundation/urlresourcekey)
-/// is the only file metadata that will be cached for now.
+/// This `Set` of
+/// [`URLResourceKey`](https://developer.apple.com/documentation/foundation/urlresourcekey)
+/// tells `Filestuff` which metadata to cache when reading files or directories.
 internal var filestuffResourceKeysSet: Set<URLResourceKey> = [
     .fileSizeKey,
     .totalFileSizeKey,
@@ -24,20 +26,26 @@ internal var filestuffResourceKeysSet: Set<URLResourceKey> = [
     .contentTypeKey
 ]
 
-/// Converts `Set` `filestuffResourceKeysSet` to `Array`  of `filestuffResourceKeys` for the
-/// convenience of calling methods / functions that requires an `Array` of
+/// The `Array` of resource keys to tell `Filestuff` which metadata to cache
+/// when reading file or directory.
+///
+/// Converts `filestuffResourceKeysSet` to an `Array` of `URLResourceKey` as
+/// a convenience. For example, when calling methods or functions that requires
+/// an `Array` of
 /// [`URLResourceKey`](https://developer.apple.com/documentation/foundation/urlresourcekey)
-/// as argument.
+/// as an argument.
 internal var filestuffResourceKeysArray: Array<URLResourceKey> { Array(filestuffResourceKeysSet) }
 
-/// An `Array` of `DirectoryEnumerationOptions` that `Filestuff` enumeration uses where enumerating directories
-/// content.
+/// An `Array` of `DirectoryEnumerationOptions` that `Filestuff` enumeration
+/// uses when enumerating directories content.
 ///
-/// The `filestuffDirectoryEnumerationOptions` `Array` has the following options:
+/// The `filestuffDirectoryEnumerationOptions` `Array` has the following
+/// options:
 ///   - [`skipsSubdirectoryDescendants`](https://developer.apple.com/documentation/foundation/filemanager/directoryenumerationoptions/1410021-skipssubdirectorydescendants)
 ///   - [`skipsPackageDescendants`](https://developer.apple.com/documentation/foundation/filemanager/directoryenumerationoptions/1410344-skipspackagedescendants)
 ///
-/// The enumeration operation in `Filestuff` will skips subdirectory descendants and skips package descendants.
+/// `Filestuff` skips package descendants.
+/// - Note: Future consideration to allow changing the enumeration options.
 internal let filestuffDirectoryEnumerationOptions: FileManager.DirectoryEnumerationOptions = [
     .skipsSubdirectoryDescendants,
     .skipsPackageDescendants
@@ -47,25 +55,42 @@ internal let filestuffDirectoryEnumerationOptions: FileManager.DirectoryEnumerat
 
 /// Filestuff namespace to collect `Filestuff` convenience methods.
 ///
-/// - Note: The classname is now `FilestuffUtils` because of the issue in Swift bug now.
-///   See [Bug SR-14195](https://github.com/apple/swift/issues/56573). When this bug is
-///   fixed in the future, `FilestuffUtils` will be renamed to `Filestuff` as it is
-///   originally intended.
+/// The classname is now `FilestuffUtils` because of the bug in Swift now.
+/// See [Bug SR-14195](https://github.com/apple/swift/issues/56573).
+///
+/// - Note: When this bug is fixed in the future release of Swift,
+/// `FilestuffUtils` will be renamed to `Filestuff` as it is originally
+/// intended.
+
+// TODO: Migrate FilestuffUtils to Filestuff
+//   Replace FilestuffUtils class line with below to migrate to final name.
+//
+//@available(*, unavailable, renamed: "Filestuff")
+//public class FilestuffUtils {
+//    public static func addFileResourceKey(keys: [URLResourceKey]) {}
+//    public static var filestuffResourceKeys: [URLResourceKey] = []
+//}
+//
+//public class Filestuff {
+
 public class FilestuffUtils {
     private init() {}
 
-    /// Adds `URLResourceKey` to default set of keys for loading file attributes.
+    /// Adds `URLResourceKey` to default set of keys for loading file
+    /// attributes.
     ///
     /// - Parameters:
     ///   - keys: Array of `URLResourceKey` to add
     ///
-    /// Keys added will persist until the app exits. While the app is still running, the additional keys will take
-    /// effect for all `Directory.load(url:)` calls to read directories.
+    /// Keys added will persist until the app exits. While the app is
+    /// still running, the additional keys will take effect for all
+    /// `Directory.load(url:)` calls to read directories.
     public static func addFileResourceKey(keys: [URLResourceKey]) {
         keys.forEach { filestuffResourceKeysSet.insert($0) }
     }
 
-    /// Array of `URLResourceKey` to indicate which file attributes to load when reading directories.
+    /// Array of `URLResourceKey` to tell `Filestuff` which file attributes to
+    /// load when reading directories.
     public var filestuffResourceKeys: [URLResourceKey] { filestuffResourceKeysArray }
 }
 
@@ -76,10 +101,12 @@ public enum FilestuffError: Error {
     /// No file were found at the location provided.
     case fileNotFound
 
-    /// The file is found in the provided location but it is not a directory where a directory is expected for the operation.
+    /// The file is found in the provided location but it is not a directory
+    /// where a directory is expected for the operation.
     case isNotDirectory
 
-    /// The file is found in the provided location but it is not a regular file where a regular file is expected for the operation.
+    /// The file is found in the provided location but it is not a regular file
+    /// where a regular file is expected for the operation.
     case isNotFile
 
     /// An unspecified error occurred while reading the content of a directory.
@@ -87,9 +114,11 @@ public enum FilestuffError: Error {
 }
 
 // MARK: - Firestuff Protocol
-/// Properties that represents a file metadata for all `Firestuff`type  containers.
+/// Properties that represents a file metadata for all `Firestuff` type
+/// containers.
 public protocol FilestuffContainer {
-    /// The URL value pointing to the file or directory on the filesystem where this `FilestuffContainer` represents.
+    /// The URL value pointing to the file or directory on the filesystem
+    /// where this `FilestuffContainer` represents.
     var url: URL { get }
 
     /// The file's metadata represented as [`URLResourceValues`](https://developer.apple.com/documentation/foundation/urlresourcevalues)
@@ -98,7 +127,7 @@ public protocol FilestuffContainer {
     /// The file’s size, in bytes.
     var size: Int? { get }
 
-    /// The file's filesystem type represented as optional [`URLFileResourceType`](https://developer.apple.com/documentation/foundation/urlfileresourcetype).
+    /// The filesystem type as [`URLFileResourceType`](https://developer.apple.com/documentation/foundation/urlfileresourcetype).
     var type: URLFileResourceType? { get }
 
     /// The file's creation date.
@@ -107,13 +136,13 @@ public protocol FilestuffContainer {
     /// The file's last modified date.
     var modified: Date? { get }
 
-    /// The file's filename.
+    /// The file's name.
     var name: String { get }
 
     /// The file's extension.
     var ext: String { get }
 
-    /// The file's filename without the file extension.
+    /// The file's name without the file extension.
     var displayName: String { get }
 
     /// The file's path on the filesystem.
@@ -128,7 +157,7 @@ public protocol FilestuffContainer {
     /// A `Boolean` value indicating whether the file is a symbolic link.
     var isSymbolicLink: Bool? { get }
 
-    /// The resource’s type of the file represented as optional [`UTType`](https://developer.apple.com/documentation/uniformtypeidentifiers/uttype).
+    /// The resource’s type of the file as [`UTType`](https://developer.apple.com/documentation/uniformtypeidentifiers/uttype).
     var contentType: UTType? { get }
 
     /// A `String` value representation of the file's resource type.

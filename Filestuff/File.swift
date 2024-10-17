@@ -7,7 +7,6 @@
 
 import Foundation
 
-/// # File
 /// A value that stores metadata of a file.
 public struct File: FilestuffContainer {
     public let url: URL
