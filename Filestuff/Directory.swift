@@ -220,6 +220,34 @@ extension Directory {
         content.forEach(body)
     }
 
+    /// Returns an array containing, in order, `FilestuffContainer`s of the
+    /// sequence that satisfy the given predicate.
+    ///
+    /// - Parameter isIncluded:
+    ///   A closure that takes a `FilestuffContainer` of the `Directory` as its
+    ///   argument and returns a Boolean value indicating whether the element
+    ///   should be included in the returned array.
+    ///
+    /// - Returns:
+    ///   An array of `FilestuffContainer` that `isIncluded` allowed.
+    ///
+    /// In this example, filter(_:) is used to include only
+    /// `FilestuffContainer.displayName` has the suffix `.txt`.
+    ///
+    ///     // Assumes home directory content is:
+    ///     //   October Sales Report.pdf
+    ///     //   Accounts.numbers
+    ///     //   Notes.txt
+    ///     //   To Do.txt
+    ///     let homeUrl = URL(filePath: "/Users/myhome")
+    ///     let homeDirectory = try! Directory.load(url: homeUrl)
+    ///     let textFiles = homeDirectory.filter { $0.displayName.hasSuffix(".txt") }
+    ///     // The array textFiles contains FillstuffContainer with
+    ///     // the following displayName:
+    ///     //   Notes.txt
+    ///     //   To Do.txt
+    ///
+    /// - Complexity: O(n), where n is the length of the sequence.
     public func filter(_ isIncluded: (any FilestuffContainer) -> Bool) -> [any FilestuffContainer] {
         content.filter(isIncluded)
     }
