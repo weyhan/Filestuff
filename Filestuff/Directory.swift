@@ -199,7 +199,7 @@ extension Directory {
     /// - Complexity: O(1)
     public var isEmpty: Bool { content.isEmpty }
 
-    /// The number of `FilestuffCounter` in the `Directory`.
+    /// The number of `FilestuffContainer` in the `Directory`.
     public var contentCount: Int { content.count }
 
     /// Calls the given closure on each `FilestuffContainer` in the `Directory`
