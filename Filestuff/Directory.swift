@@ -200,7 +200,7 @@ extension Directory {
     public var isEmpty: Bool { content.isEmpty }
 
     /// The number of `FilestuffContainer` in the `Directory`.
-    public var contentCount: Int { content.count }
+    public var count: Int { content.count }
 
     /// Calls the given closure on each `FilestuffContainer` in the `Directory`
     /// in the same order as a `for`-`in` loop.
