@@ -16,7 +16,25 @@ _Note: There are no plans to support Carthage or CocoaPods package managers._
 
 #### Swift Package
 
-_Currently under development._
+[Swift Package Manager](https://swift.org/package-manager/) is a tool for managing the distribution of Swift code.
+
+##### For Swift Package Project
+
+After you set up your Package.swift manifest file in your project, you can add Filestuff as a dependency by adding it to your Package.swift dependencies value.
+
+```
+dependencies: [ .package(url: "https://github.com/weyhan/Filestuff.git", from: "1.0.0") ]
+```
+
+##### For Xcode Project
+
+1. Using Xcode 11 or above, go to `File` > `Add Package Dependencies…`.
+1. Paste the project URL: `https://github.com/weyhan/Filestuff.git` in the search field.
+1. Select the project target from the search result list if not already selected.
+1. Configure the dependency rules to your preferences.
+1. Click `Add Package` to add Filestuff to your project.
+
+_Note: The `Add Package Dependencies` interface could change from version to version of Xcode._
 
 #### Git Submodule
 
@@ -170,11 +188,11 @@ There are two ways to ask Filestuff to load additional resources from the filesy
 To load additional attributes while reading directories, add `URLResourceKey` using `addFileResourceKey` convenience method. e.g.:
 
 ```
-FilestuffUtils.addFileResourceKey(key: .totalFileAllocatedSizeKey)
+FilestuffUtils.add(resourceKeys: .totalFileAllocatedSizeKey)
 
 ```
 
-_Note: The additional keys will persist in the same session but not across sessions. In other words, the keys added will immediately take effect and continue to be in effect until the app quits. Any subsequent read will include the additional keys._
+_Note: The additional keys will persist in the same session but not across sessions. In other words, the keys once added, will immediately take effect and continue to be in effect until the app quits. Any subsequent read will include the additional keys._
 
 ##### Adding resource keys to a one-time load method
 

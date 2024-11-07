@@ -1,5 +1,7 @@
 #!/bin/bash
 
+rm -rf build/*
+
 xcodebuild archive \
 -scheme Filestuff \
 -configuration Release \

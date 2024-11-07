@@ -124,7 +124,7 @@ extension Directory {
     fileprivate static func load(url: URL, attribute: URLResourceValues?, extraResourceKeys: [URLResourceKey]? = nil, shallow: Bool = true) throws -> Directory {
         let fileManager = FileManager.default
 
-        var isDirectory : ObjCBool = false
+        var isDirectory: ObjCBool = false
         let fileExist = fileManager.fileExists(atPath: url.path, isDirectory: &isDirectory)
 
         guard fileExist else { throw FilestuffError.fileNotFound }
@@ -132,8 +132,8 @@ extension Directory {
 
         let directoryEnumerator = fileManager.enumerator(
             at: url,
-            includingPropertiesForKeys: filestuffResourceKeysArray,
-            options: filestuffDirectoryEnumerationOptions
+            includingPropertiesForKeys: FilestuffUtils.resourceKeysArray,
+            options: FilestuffUtils.directoryEnumerationOptions
         )
 
         guard let directoryEnumerator = directoryEnumerator else {
@@ -141,7 +141,7 @@ extension Directory {
         }
 
         // Add one-off additional `URLResourceKey`s if provided.
-        var resourceKeys = filestuffResourceKeysSet
+        var resourceKeys = FilestuffUtils.resourceKeysSet
         if let extraResourceKeys {
             extraResourceKeys.forEach { resourceKeys.insert($0) }
         }
@@ -199,8 +199,8 @@ extension Directory {
     /// - Complexity: O(1)
     public var isEmpty: Bool { content.isEmpty }
 
-    /// The number of `FilestuffCounter` in the `Directory`.
-    public var contentCount: Int { content.count }
+    /// The number of `FilestuffContainer` in the `Directory`.
+    public var count: Int { content.count }
 
     /// Calls the given closure on each `FilestuffContainer` in the `Directory`
     /// in the same order as a `for`-`in` loop.
