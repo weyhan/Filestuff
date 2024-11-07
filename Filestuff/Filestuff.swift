@@ -8,48 +8,65 @@
 import Foundation
 import UniformTypeIdentifiers
 
-/// The `Set` of resource keys to tell `Filestuff` which metadata to cache when
-/// reading file or directory.
-///
-/// This `Set` of
-/// [`URLResourceKey`](https://developer.apple.com/documentation/foundation/urlresourcekey)
-/// tells `Filestuff` which metadata to cache when reading files or directories.
-private(set) var filestuffResourceKeysSet: Set<URLResourceKey> = [
-    .fileSizeKey,
-    .totalFileSizeKey,
-    .fileResourceTypeKey,
-    .creationDateKey,
-    .contentModificationDateKey,
-    .isRegularFileKey,
-    .isDirectoryKey,
-    .isSymbolicLinkKey,
-    .contentTypeKey
-]
+// MARK: - FilestuffConfiguration Class
 
-/// The `Array` of resource keys to tell `Filestuff` which metadata to cache
-/// when reading file or directory.
-///
-/// Converts `filestuffResourceKeysSet` to an `Array` of `URLResourceKey` as
-/// a convenience. For example, when calling methods or functions that requires
-/// an `Array` of
-/// [`URLResourceKey`](https://developer.apple.com/documentation/foundation/urlresourcekey)
-/// as an argument.
-internal var filestuffResourceKeysArray: Array<URLResourceKey> { Array(filestuffResourceKeysSet) }
+/// Internal `Filestuff` configuration object not exposed to  the other
+/// parts of the `Filestuff` framework.
+final fileprivate class FilestuffConfiguration: @unchecked Sendable {
+    static let shared = FilestuffConfiguration()
+    private init() { }
 
-/// An `Array` of `DirectoryEnumerationOptions` that `Filestuff` enumeration
-/// uses when enumerating directories content.
-///
-/// The `filestuffDirectoryEnumerationOptions` `Array` has the following
-/// options:
-///   - [`skipsSubdirectoryDescendants`](https://developer.apple.com/documentation/foundation/filemanager/directoryenumerationoptions/1410021-skipssubdirectorydescendants)
-///   - [`skipsPackageDescendants`](https://developer.apple.com/documentation/foundation/filemanager/directoryenumerationoptions/1410344-skipspackagedescendants)
-///
-/// `Filestuff` skips package descendants.
-/// - Note: Future consideration to allow changing the enumeration options.
-internal let filestuffDirectoryEnumerationOptions: FileManager.DirectoryEnumerationOptions = [
-    .skipsSubdirectoryDescendants,
-    .skipsPackageDescendants
-]
+    private let lock = NSLock()
+
+    // MARK: resourceKeys
+
+    // Private defaults
+    private static let resourceKeysDefaultSet: Set<URLResourceKey> = [
+        .fileSizeKey,
+        .totalFileSizeKey,
+        .fileResourceTypeKey,
+        .creationDateKey,
+        .contentModificationDateKey,
+        .isRegularFileKey,
+        .isDirectoryKey,
+        .isSymbolicLinkKey,
+        .contentTypeKey
+    ]
+
+    // Private storage
+    private var _resourceKeys: Set<URLResourceKey> = resourceKeysDefaultSet
+
+    /// Get only active resource keys `Set` that is thread safe to access.
+    var resourceKeysSet: Set<URLResourceKey> {
+        lock.withLock { _resourceKeys }
+    }
+
+    /// Get only active resource keys `Array` that is thread safe to access.
+    var resourceKeysArray: [URLResourceKey] {
+        lock.withLock { Array(resourceKeysSet) }
+    }
+
+    /// Thread safe convenience method to add resource keys to the active `Set`.
+    func insert(resourceKeys: [URLResourceKey]) {
+        lock.withLock { resourceKeys.forEach { _resourceKeys.insert($0) } }
+    }
+
+    // MARK: FileManager.DirectoryEnumerationOptions
+
+    // Private defaults
+    private static let directoryEnumerationOptionsDefault: FileManager.DirectoryEnumerationOptions = [
+        .skipsSubdirectoryDescendants,
+        .skipsPackageDescendants
+    ]
+
+    // Private storage
+    private var _directoryEnumerationOptions = directoryEnumerationOptionsDefault
+
+    /// Get only active enumeration options `Array` that is thread safe to access.
+    var directoryEnumerationOptions: FileManager.DirectoryEnumerationOptions {
+        lock.withLock { _directoryEnumerationOptions }
+    }
+}
 
 // MARK: - Filestuff Class
 
@@ -80,18 +97,48 @@ public class FilestuffUtils {
     /// attributes.
     ///
     /// - Parameters:
-    ///   - keys: Array of `URLResourceKey` to add
+    ///   - resourceKeys: Array of `URLResourceKey` to add
     ///
     /// Keys added will persist until the app exits. While the app is
     /// still running, the additional keys will take effect for all
     /// `Directory.load(url:)` calls to read directories.
-    public static func addFileResourceKey(keys: [URLResourceKey]) {
-        keys.forEach { filestuffResourceKeysSet.insert($0) }
+    public static func add(resourceKeys keys: [URLResourceKey]) {
+        FilestuffConfiguration.shared.insert(resourceKeys: keys)
     }
 
-    /// Array of `URLResourceKey` to tell `Filestuff` which file attributes to
-    /// load when reading directories.
-    public static var filestuffResourceKeys: [URLResourceKey] { filestuffResourceKeysArray }
+    // TODO: Add reset and/or remove methods to remove additional keys added.
+
+    /// The `Set` of resource keys to tell `Filestuff` which metadata to cache when
+    /// reading file or directory.
+    ///
+    /// This `Set` of
+    /// [`URLResourceKey`](https://developer.apple.com/documentation/foundation/urlresourcekey)
+    /// tells `Filestuff` which metadata to cache when reading files or directories.
+    public static var resourceKeysSet: Set<URLResourceKey> { FilestuffConfiguration.shared.resourceKeysSet }
+
+    /// The `Array` of resource keys to tell `Filestuff` which metadata to cache
+    /// when reading file or directory.
+    ///
+    /// Converts `FilestuffUtils.resourceKeysSet` to an `Array` of `URLResourceKey` for
+    /// convenience when calling methods or functions that requires an `Array` of
+    /// [`URLResourceKey`](https://developer.apple.com/documentation/foundation/urlresourcekey)
+    /// as its argument.
+    public static var resourceKeysArray: [URLResourceKey] { FilestuffConfiguration.shared.resourceKeysArray }
+
+    /// An `Array` of `DirectoryEnumerationOptions` that `Filestuff` enumeration
+    /// uses when enumerating directories content.
+    ///
+    /// The `filestuffDirectoryEnumerationOptions` `Array` contains the
+    /// following options:
+    ///   - [`skipsSubdirectoryDescendants`](https://developer.apple.com/documentation/foundation/filemanager/directoryenumerationoptions/1410021-skipssubdirectorydescendants)
+    ///   - [`skipsPackageDescendants`](https://developer.apple.com/documentation/foundation/filemanager/directoryenumerationoptions/1410344-skipspackagedescendants)
+    ///
+    /// - Note: `Filestuff` will not decend into any packages and treats packages as one file.
+    ///
+    /// - Note: Future consideration to allow changing the enumeration options.
+    public static var directoryEnumerationOptions: FileManager.DirectoryEnumerationOptions {
+        FilestuffConfiguration.shared.directoryEnumerationOptions
+    }
 }
 
 // MARK: - Firestuff Throw Targets

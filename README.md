@@ -170,11 +170,11 @@ There are two ways to ask Filestuff to load additional resources from the filesy
 To load additional attributes while reading directories, add `URLResourceKey` using `addFileResourceKey` convenience method. e.g.:
 
 ```
-FilestuffUtils.addFileResourceKey(key: .totalFileAllocatedSizeKey)
+FilestuffUtils.add(resourceKeys: .totalFileAllocatedSizeKey)
 
 ```
 
-_Note: The additional keys will persist in the same session but not across sessions. In other words, the keys added will immediately take effect and continue to be in effect until the app quits. Any subsequent read will include the additional keys._
+_Note: The additional keys will persist in the same session but not across sessions. In other words, the keys once added, will immediately take effect and continue to be in effect until the app quits. Any subsequent read will include the additional keys._
 
 ##### Adding resource keys to a one-time load method
 
