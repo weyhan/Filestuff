@@ -2,3 +2,9 @@ xcuserdata
 *.xcworkspace
 .DS_Store
 build
+/.build
+/Packages
+xcuserdata/
+DerivedData/
+.swiftpm/
+.netrc

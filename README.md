@@ -16,7 +16,25 @@ _Note: There are no plans to support Carthage or CocoaPods package managers._
 
 #### Swift Package
 
-_Currently under development._
+[Swift Package Manager](https://swift.org/package-manager/) is a tool for managing the distribution of Swift code.
+
+##### For Swift Package Project
+
+After you set up your Package.swift manifest file in your project, you can add Filestuff as a dependency by adding it to your Package.swift dependencies value.
+
+```
+dependencies: [ .package(url: "https://github.com/weyhan/Filestuff.git", from: "1.0.0") ]
+```
+
+##### For Xcode Project
+
+1. Using Xcode 11 or above, go to `File` > `Add Package Dependencies…`.
+1. Paste the project URL: `https://github.com/weyhan/Filestuff.git` in the search field.
+1. Select the project target from the search result list if not already selected.
+1. Configure the dependency rules to your preferences.
+1. Click `Add Package` to add Filestuff to your project.
+
+_Note: The `Add Package Dependencies` interface could change from version to version of Xcode._
 
 #### Git Submodule
 
